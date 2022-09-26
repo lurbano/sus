@@ -1,0 +1,351 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     14187,        343]
+NotebookOptionsPosition[     12809,        312]
+NotebookOutlinePosition[     13153,        327]
+CellTagsIndexPosition[     13110,        324]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Thoughts on magnetic enhancement", "Section",
+ CellChangeTimes->{{3.8720730697568035`*^9, 
+  3.8720730805007544`*^9}},ExpressionUUID->"4189da78-6cca-4d80-8756-\
+0091092e0b17"],
+
+Cell["\<\
+Goal : to replicate a soil profile that reaches a finite, climate dependent \
+state and can simulate a magnetically enhanced horizon.
+I stole the time dependence from the nuclear decay equation, using the growth \
+of the daughter nuclei to simulate magnetic enhancement. P is the decay of \
+the parent isotopes, d is the growth of the daughters. The shape of the curve \
+looks OK, but I am not sure whether it is what we want. I think I am \
+conflating rates and accumulated effect. Need to think about that. Maybe take \
+the derivative of d(k,t). 
+Maybe we need to re-write the growth rate in terms of po (how close we are to \
+the finite value), but then, how do we keep the time in here. I guess the \
+time-dependence comes in in a second step, because we have to apply the \
+growth rate for a certain amount of time.\
+\>", "Text",
+ CellChangeTimes->{{3.872073090619759*^9, 3.8720732493050156`*^9}, {
+  3.872073280994946*^9, 3.8720733922863407`*^9}, {3.872073586966564*^9, 
+  3.8720736738540487`*^9}, {3.8720737242171593`*^9, 
+  3.8720737447860403`*^9}},ExpressionUUID->"4737c2f5-042c-486a-a470-\
+f29d4dda593b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"po", " ", "=", " ", "1"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"p", "[", 
+   RowBox[{"k_", ",", "t_"}], "]"}], " ", ":=", " ", 
+  RowBox[{"po", " ", 
+   RowBox[{"Exp", "[", 
+    RowBox[{
+     RowBox[{"-", "k"}], "  ", "t"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"d", "[", 
+   RowBox[{"k_", ",", "t_"}], "]"}], " ", ":=", " ", 
+  RowBox[{"po", " ", "-", " ", 
+   RowBox[{"Exp", "[", 
+    RowBox[{
+     RowBox[{"-", "k"}], "  ", "t"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"d", "[", 
+      RowBox[{"k", ",", "t"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"t", ",", "0", ",", "10"}], "}"}], ",", " ", 
+     RowBox[{"PlotRange", " ", "\[Rule]", " ", "All"}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "0.1", ",", "1"}], "}"}]}], "]"}]}], "Input",
+ CellChangeTimes->{{3.872070236137699*^9, 3.872070368432789*^9}, {
+  3.872072067900201*^9, 3.872072155604643*^9}, {3.8720732555209026`*^9, 
+  3.8720732687367134`*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"79008338-93a5-4e54-9cac-4683fda046c0"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`k$$ = 0.6809999999999999, Typeset`show$$ = 
+    True, Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`k$$], 0.1, 1}}, Typeset`size$$ = {360., {108., 113.}},
+     Typeset`update$$ = 0, Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`k$2413$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`k$$ = 0.1}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`k$$, $CellContext`k$2413$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> Plot[
+        $CellContext`d[$CellContext`k$$, $CellContext`t], {$CellContext`t, 0, 
+         10}, PlotRange -> All], 
+      "Specifications" :> {{$CellContext`k$$, 0.1, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{411., {155., 161.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.872070329777763*^9, 3.87207037661756*^9}, {
+   3.8720720829125023`*^9, 3.8720721177736464`*^9}, {3.872072151271027*^9, 
+   3.8720721561424074`*^9}, 3.87207327028948*^9, 3.872777606806525*^9},
+ CellLabel->"Out[4]=",ExpressionUUID->"06400b01-8d67-44ec-86f6-afef621b3fd3"]
+}, Open  ]],
+
+Cell["\<\
+The tangent hyperbolicus (tanh) looks like a decent way to limit magnetic \
+enhancement to the upper horizons. Any enhancement would be multiplied by it. \
+Since it drops to zero quickly, enhancement should stop ar a certain depth. s \
+controls the steepness of the transition. o pushes the transition to the \
+desired depth.\
+\>", "Text",
+ CellChangeTimes->{{3.8720734136432524`*^9, 
+  3.872073529221406*^9}},ExpressionUUID->"6aae90bc-6e8a-499c-aae8-\
+8671c3d6366c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"g", "[", 
+   RowBox[{"d_", ",", " ", "s_", ",", " ", "o_"}], "]"}], " ", ":=", " ", 
+  RowBox[{"0.5", "  ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"Tanh", "[", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"s", " ", "d"}], ")"}], " ", "+", " ", "o"}], "]"}], "+", 
+     "1"}], ")"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"g", "[", 
+      RowBox[{"d", ",", "s", ",", "o"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"d", ",", 
+       RowBox[{"-", "5"}], ",", "1"}], "}"}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"s", ",", "2", ",", "\"\<steepness\>\""}], "}"}], ",", "1", ",",
+      "4"}], "}"}], ",", " ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"o", ",", "2", ",", "\"\<offset\>\""}], "}"}], ",", "0", ",", 
+     "4"}], "}"}]}], "]"}]}], "Input",
+ CellChangeTimes->{{3.8720725228342*^9, 3.8720727791870856`*^9}, {
+  3.8720728207387533`*^9, 3.872072923258312*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"8233195e-7927-4441-a754-ce108cd46574"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`o$$ = 2.85, $CellContext`s$$ = 1.425, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`s$$], 2, "steepness"}, 1, 4}, {{
+       Hold[$CellContext`o$$], 2, "offset"}, 0, 4}}, Typeset`size$$ = {
+    360., {111., 117.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, $CellContext`s$2727$$ = 
+    0, $CellContext`o$2728$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`o$$ = 2, $CellContext`s$$ = 2}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`s$$, $CellContext`s$2727$$, 0], 
+        Hold[$CellContext`o$$, $CellContext`o$2728$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> Plot[
+        $CellContext`g[$CellContext`d, $CellContext`s$$, $CellContext`o$$], \
+{$CellContext`d, -5, 1}], 
+      "Specifications" :> {{{$CellContext`s$$, 2, "steepness"}, 1, 
+         4}, {{$CellContext`o$$, 2, "offset"}, 0, 4}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{411., {172., 178.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.8720725938912716`*^9, 3.872072649444089*^9, {3.8720726950914707`*^9, 
+   3.8720727115089273`*^9}, {3.8720727432767134`*^9, 3.872072773248685*^9}, {
+   3.872072825226802*^9, 3.872072923921234*^9}, 3.8727776093278494`*^9},
+ CellLabel->"Out[6]=",ExpressionUUID->"3a28faa8-7132-430f-8862-394dd126fa12"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+  "Second", " ", "Attempt", " ", "to", " ", "define", " ", "an", " ", 
+   "enhancement", " ", 
+   RowBox[{"function", ".", "Here"}]}], ",", " ", 
+  RowBox[{
+  "enhancement", " ", "will", " ", "depend", " ", "on", " ", "magnetiozation",
+    " ", "of", " ", 
+   RowBox[{"sample", ".", " "}]}]}]], "Input",
+ CellChangeTimes->{{3.872777917503415*^9, 
+  3.8727779902619143`*^9}},ExpressionUUID->"a666ce64-c6ba-47fd-abb2-\
+b0362ec6e6bf"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"enh", "[", 
+   RowBox[{"c_", ",", "k_"}], "]"}], " ", ":=", " ", 
+  RowBox[{"Exp", "[", 
+   RowBox[{
+    RowBox[{"-", "k"}], " ", "c"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"enh", "[", 
+      RowBox[{"c", ",", "k"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"c", ",", "0", ",", "10"}], "}"}], ",", " ", 
+     RowBox[{"PlotRange", " ", "\[Rule]", " ", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "0.1", ",", "1"}], "}"}]}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"enh", "[", 
+   RowBox[{
+    RowBox[{"1.05", "+", "0.591"}], ",", "0.5"}], "]"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.872778962269446*^9, 3.872779069389328*^9}, {
+  3.872779111229113*^9, 3.8727791436291685`*^9}, {3.872779337698269*^9, 
+  3.872779339368224*^9}, {3.872779396467827*^9, 3.872779406158045*^9}, {
+  3.872779533657466*^9, 3.8727795346272793`*^9}, {3.872779579207412*^9, 
+  3.872779584666947*^9}},
+ CellLabel->"In[44]:=",ExpressionUUID->"008dc69f-4d3a-4c9a-9504-74e1c823eb5a"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`k$$ = 0.1, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`k$$], 0.1, 1}}, Typeset`size$$ = {360., {117., 121.}},
+     Typeset`update$$ = 0, Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`k$24231$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`k$$ = 0.1}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`k$$, $CellContext`k$24231$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> Plot[
+        $CellContext`enh[$CellContext`c, $CellContext`k$$], {$CellContext`c, 
+         0, 10}, PlotRange -> {1, 0}], 
+      "Specifications" :> {{$CellContext`k$$, 0.1, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{411., {163., 169.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.872779043209293*^9, 3.8727790702890387`*^9}, {
+   3.872779122959176*^9, 3.872779144159198*^9}, 3.8727794077979584`*^9, 
+   3.872779535447604*^9, 3.872779589677298*^9},
+ CellLabel->"Out[45]=",ExpressionUUID->"7c0e7d19-4452-4b2d-809c-d3bb444b995c"],
+
+Cell[BoxData["0.4402114937235286`"], "Output",
+ CellChangeTimes->{{3.872779043209293*^9, 3.8727790702890387`*^9}, {
+   3.872779122959176*^9, 3.872779144159198*^9}, 3.8727794077979584`*^9, 
+   3.872779535447604*^9, 3.872779589747235*^9},
+ CellLabel->"Out[46]=",ExpressionUUID->"47eafac3-278f-4702-9276-355f4a2918ec"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1920, 1037},
+WindowMargins->{{-8, Automatic}, {Automatic, -8}},
+FrontEndVersion->"12.0 for Microsoft Windows (64-bit) (April 8, 2019)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 181, 3, 67, "Section",ExpressionUUID->"4189da78-6cca-4d80-8756-0091092e0b17"],
+Cell[764, 27, 1124, 18, 100, "Text",ExpressionUUID->"4737c2f5-042c-486a-a470-f29d4dda593b"],
+Cell[CellGroupData[{
+Cell[1913, 49, 1164, 31, 86, "Input",ExpressionUUID->"79008338-93a5-4e54-9cac-4683fda046c0"],
+Cell[3080, 82, 1914, 37, 335, "Output",ExpressionUUID->"06400b01-8d67-44ec-86f6-afef621b3fd3"]
+}, Open  ]],
+Cell[5009, 122, 477, 9, 56, "Text",ExpressionUUID->"6aae90bc-6e8a-499c-aae8-8671c3d6366c"],
+Cell[CellGroupData[{
+Cell[5511, 135, 1139, 33, 48, "Input",ExpressionUUID->"8233195e-7927-4441-a754-ce108cd46574"],
+Cell[6653, 170, 2206, 43, 369, "Output",ExpressionUUID->"3a28faa8-7132-430f-8862-394dd126fa12"]
+}, Open  ]],
+Cell[8874, 216, 466, 12, 28, "Input",ExpressionUUID->"a666ce64-c6ba-47fd-abb2-b0362ec6e6bf"],
+Cell[CellGroupData[{
+Cell[9365, 232, 1212, 31, 105, "Input",ExpressionUUID->"008dc69f-4d3a-4c9a-9504-74e1c823eb5a"],
+Cell[10580, 265, 1883, 37, 351, "Output",ExpressionUUID->"7c0e7d19-4452-4b2d-809c-d3bb444b995c"],
+Cell[12466, 304, 315, 4, 32, "Output",ExpressionUUID->"47eafac3-278f-4702-9276-355f4a2918ec"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
