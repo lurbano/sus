@@ -1,0 +1,2 @@
+# sus
+Magnetic Susceptibility Project
