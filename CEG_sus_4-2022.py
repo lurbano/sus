@@ -9,144 +9,11 @@
 #from visual import *
 #from visual.graph import *
 import numpy as np
-from vpython import *
-#from vpython.graph import *
+import matplotlib.pyplot as plt 
+import time
         
 
-class profile:
-    def __init__(self, z, dx, scale=1.0):
-        # z is a 1-d array
-        # dx is a float
-        self.z = z
-        self.dx = dx
-        self.scale = scale
-        self.line = curve(x=self.dx*arange(len(self.z)), y = self.z * self.scale, z=0.0*self.z)
-        #print "profile.x=", self.line.x, self.dx
 
-        self.nodes = []
-        for i in range(len(self.z)):
-            self.nodes.append(sphere(pos=self.line.pos[i], radius=dx/5.0))
-
-    def update(self):
-        self.line.y = self.z * self.scale
-        for i in range(len(self.z)):
-            self.nodes[i].pos=self.line.pos[i]
-
-
-def mouse_pause(scene_x):
-    l_stop = 0
-    while l_stop == 0:
-        m1 = scene_x.mouse.getevent()
-        if m1.click:
-            #print "bingo"
-            x=1
-        if m1.release:
-            print ("go")
-            l_stop = 1
-
-class axes:
-    def __init__(self, xmin = 0.0, xmax = 10.0, dx = -1, xscale = 1.0, xcolor = color.red, xshow = True,
-                                ymin = 0.0, ymax = 10.0, dy = -1, yscale = 1.0, ycolor = color.blue, yshow = True,
-                                zmin = 0.0, zmax = 10.0, dz = -1, zscale = 1.0, zcolor = color.green, zshow = True):
-        
-        (self.xmin, self.xmax, self.dx, self.xscale, self.xcolor, self.xshow) = (xmin, xmax, dx, xscale, xcolor, xshow)
-        (self.ymin, self.ymax, self.dy, self.yscale, self.ycolor, self.yshow) = (ymin, ymax, dy, yscale, ycolor, yshow)
-        (self.zmin, self.zmax, self.dz, self.zscale, self.zcolor, self.zshow) = (zmin, zmax, dz, zscale, zcolor, zshow)
-
-        self.nxtics = 11
-        self.nytics = 11
-        self.nztics = 11
-        
-        if self.xshow:
-            self.draw_xaxis()
-        if self.yshow:
-            self.draw_yaxis()
-        if self.zshow:
-            self.draw_zaxis()
-
-    def draw_xaxis(self):
-            self.xaxis = curve(pos=[(self.xmin*self.xscale,0), (self.xmax*self.xscale,0)], color = self.xcolor)
-            print ("xaxis.pos", self.xaxis.pos)
-            if self.dx == -1:
-                self.dx = self.reset_tic_scale(self.xmax, self.xmin, self.nxtics)
-            self.tics = []
-            for i in range(self.nxtics):
-                xpos = (self.xmin+i*self.dx)*self.xscale
-                #print xpos
-                self.tics.append(tick_mark(pos=vector(xpos, 0, 0), text='%1.0f' % xpos))
-            
-    def draw_yaxis(self):
-            self.zaxis = curve(pos=[(0,self.ymin), (0,self.ymax)], color = self.ycolor)
-            if self.dy == -1:
-                self.dy = self.reset_tic_scale(self.ymax, self.ymin, self.nytics)
-            self.tics = []
-            for i in range(self.nytics):
-                ypos = self.ymin+i*self.dy
-                self.tics.append(tick_mark(pos=vector(0, ypos, 0), text='%1.0f' % ypos, axis="y"))
-
-    def draw_zaxis(self):
-            self.zaxis = curve(pos=[(0,0,self.zmin), (0,0,self.zmax)], color = self.zcolor)
-
-    def reset_tic_scale(self, vmax, vmin, ntics):
-        return (vmax - vmin) / float(ntics-1)
-
-class tick_mark:
-    def __init__(self, pos, text, visible = True, length = 1.0, axis = "x", offset=None, show_tic=True, show_label=True):
-        (self.pos, self.text, self.visible, self.length, self.axis) = (pos, text, visible, length, axis)
-        if offset == None:
-            self.offset = -self.length * 2.0
-        if axis == "x":
-            self.tic = curve(pos=[(self.pos),(self.pos+vector(0, -self.length, 0))])
-            self.label = label(pos=self.pos+vector(0,self.offset,0), text = self.text, box=False, opacity=0)
-        if axis == "y":
-            self.tic = curve(pos=[(self.pos),(self.pos+vector(-self.length, 0, 0))])
-            self.label = label(pos=self.pos+vector(self.offset,0,0), text = self.text, box=False, opacity=0, xoffset=-1, line=0)
-            
-class sus_plot:
-    def __init__(self, z, sus, old_scene, dz=1, show_nodes=False, node_number=-9999):
-        self.show_nodes = show_nodes
-        title = "Susceptibility Profile" 
-        self.graph = display(title=title, x=500, y=0, width=500, height=500)
-        self.axes = axes(xmin=0, xmax=1e-6, xscale = 1e7, ymin=-10.0, ymax=0, zshow=False) #xmax=1e-7, xscale = 1e8,
-        self.title = label(pos=(0, 2), text="Node: %(n)3i" % {'n' : node_number})
-        self.graph.center = vector(self.axes.xscale*(self.axes.xmax-self.axes.xmin)/2.0, \
-                                                   self.axes.yscale*(self.axes.ymin-self.axes.ymax)/2.0)
-        self.line = curve(x=sus*self.axes.xscale, y=z)
-        if self.show_nodes:
-            self.nodes = []
-            for i in range(len(z)):
-                self.nodes.append(sphere(pos=(sus[i]*self.axes.xscale,z[i]), radius=0.1))
-        old_scene.select()
-    def update(self, z, sus, node_number=-9999):
-        #self.graph.title = "Susceptibility: Node %(n)3i" % {'n' : node_number}
-        if node_number != -9999:
-            self.title.text="Node: %(n)3i" % {'n' : node_number}
-        self.line.x = sus*self.axes.xscale
-        self.line.y = z
-        if self.show_nodes:
-            for i in range(len(self.nodes)):
-                self.nodes.pos= vector(sus[i]*self.axes.xscale,z[i])
-        #print "line=", max(sus), min(sus)
-
-def update_soil_graph(soilgrf, soilcols, n, slope):
-    slope.nodes[soilgrf.node_number].color = color.white
-    soilgrf.z = soilcols[n].z
-    soilgrf.sus = soilcols[n].sus
-    soilgrf.node_number = n
-    soilgrf.update_graph()
-    slope.nodes[soilgrf.node_number].color = color.red
-    
-def change_graph_node(s, soilgrf, soilcols, slope):
-        if s == "up" or s == "right":
-            #print "alpha"
-            if soilgrf.node_number < ncells-2:
-                n = soilgrf.node_number+1
-                update_soil_graph(soilgrf, soilcols, n, slope)
-        elif s == "down" or s == "left":
-            #print "beta"
-            if soilgrf.node_number >= 1:
-                n = soilgrf.node_number-1
-                update_soil_graph(soilgrf, soilcols, n, slope)
 
 class soil_column:
     def __init__(self, ncells=1000, dz=0.01, node_number=-9999):
@@ -184,7 +51,7 @@ class soil_column:
             d2 = depth - dz_fill #d2 is the depth remaining after filling top node
             #print "dz_fill, sus_old, sus_new", dz_fill, sus_old, sus_new
             '''add new nodes'''
-            nnew_nodes = int(floor(d2 / self.dz) + 1)
+            nnew_nodes = int(np.floor(d2 / self.dz) + 1)
             dz_top_new = d2 - self.dz * (nnew_nodes-1)
             self.sus[nnew_nodes:] = self.sus[:self.ncells-nnew_nodes]
             self.sus[:nnew_nodes] = sus_in
@@ -258,13 +125,13 @@ class soil_column:
 
     def adjust_z(self, dz_top_new):
         self.dz_top = dz_top_new
-        self.z[1:] = arange(0.0, -(self.ncells-1)*self.dz, -self.dz) - self.dz_top
+        self.z[1:] = np.arange(0.0, -(self.ncells-1)*self.dz, -self.dz) - self.dz_top
             
-    def create_graph(self):
-        self.graph = sus_plot(self.z, self.sus, scene, show_nodes=False, node_number = self.node_number)
+    # def create_graph(self):
+    #     self.graph = sus_plot(self.z, self.sus, scene, show_nodes=False, node_number = self.node_number)
 
-    def update_graph(self):
-        self.graph.update(self.z, self.sus, node_number=self.node_number)
+    # def update_graph(self):
+    #     self.graph.update(self.z, self.sus, node_number=self.node_number)
 
 def read_topo_from_output(datafile="topo_1b.csv"):
     inf = open(datafile, 'r')
@@ -281,7 +148,7 @@ def read_topo_from_output(datafile="topo_1b.csv"):
 '''time dimensions'''
 '''***************************************'''
 dt = 5
-nsteps = 11
+nsteps = 500
 print_out_step = 10 #print every so many steps
 
 
@@ -299,10 +166,7 @@ ncells = 200
 dx = .5
 '''initial topography'''
 # set up initial arrays
-try: #numpy
-    topo = np.ones((ncells,), float)*50.0
-except:
-    topo = np.ones((ncells,), Float)*50.0
+topo = np.ones((ncells,), float)*50.0
 topo[int(ncells/2):ncells] = 25.0
 # input initial topgraphy (two options)
 #  option 1: copy and paste values
@@ -310,6 +174,18 @@ topo = np.array([49.9521499317,49.9519271202,49.9496931132,49.9453889506,49.9389
 #  option 2: read from existing output file (default "suscept.txt" but this file will be overwritten at the end of this simulation)
 #topo = read_topo_from_output("topo_1b.csv")
 print ("topo", topo)
+ncells = topo.shape[0]
+xpos = np.arange(topo.shape[0])
+print(f'topo.shape = {topo.shape}, {xpos.shape}, {topo.shape[0]}')
+
+# GRAPH INITIAL TOPOGRAPHY
+plt.ion()
+fig, ax = plt.subplots()
+# ax.scatter(xpos, y)
+topoLine, = ax.plot(xpos,topo)
+initTopoLine = ax.plot(xpos,topo)
+# plt.show()
+
 
 '''***************************************'''
 '''Set up soil columns for magnetic susceptibility'''
@@ -320,7 +196,7 @@ chi_surface = 1.0e-9
 z_star = 1.4
 
 '''initial soil depths at nodes'''
-z = arange(0, -n_soil_cells*soil_dz,-soil_dz) #depth below the surface
+z = np.arange(0, -n_soil_cells*soil_dz,-soil_dz) #depth below the surface
 soilcols = []
 for i in range(ncells):
     soilcols.append(soil_column(n_soil_cells, soil_dz, node_number=i))
@@ -333,53 +209,46 @@ outcol = 65
 '''output file name'''
 outfile = "suscept.csv"
 
-'''create output graphs'''
-soilgrf = soilcols[outcol]
-soilgrf.create_graph()
+# '''create output graphs'''
+# soilgrf = soilcols[outcol]
+# soilgrf.create_graph()
 
-'''center output window'''
-try: #numpy
-    scene.center = vector(ncells*dx/2.0,(amax(topo)+amin(topo))/2.0,0)
-except:
-    scene.center = vector(ncells*dx/2.0,(max(topo)+min(topo))/2.0,0)
+# '''center output window'''
+# try: #numpy
+#     scene.center = vector(ncells*dx/2.0,(amax(topo)+amin(topo))/2.0,0)
+# except:
+#     scene.center = vector(ncells*dx/2.0,(max(topo)+min(topo))/2.0,0)
     
-'''slope topography'''
-slope = profile(topo, dx)
-slope.nodes[outcol].color = color.red
+# '''slope topography'''
+# slope = profile(topo, dx)
+# slope.nodes[outcol].color = color.red
 
 
 '''***************************************'''
 '''model setup'''
 '''***************************************'''
 '''storage arrays'''
-try: #numpy
-    q_s = zeros(topo.shape, float)
-    dh = zeros(topo.shape, float)
-    dh_in = zeros(topo.shape, float)
-    dh_out = zeros(topo.shape, float)
-    topo_old = zeros(topo.shape, float)
-    sus_out = zeros(topo.shape, float)
-except:
-    q_s = zeros(topo.shape, Float)
-    dh = zeros(topo.shape, Float)
-    dh_in = zeros(topo.shape, Float)
-    dh_out = zeros(topo.shape, Float)
-    topo_old = zeros(topo.shape, Float)
-    sus_out = zeros(topo.shape, Float)
+q_s = np.zeros(topo.shape, float)
+dh = np.zeros(topo.shape, float)
+dh_in = np.zeros(topo.shape, float)
+dh_out = np.zeros(topo.shape, float)
+topo_old = np.zeros(topo.shape, float)
+sus_out = np.zeros(topo.shape, float)
+
 
 '''labels'''
-try: #numpy
-    timestamp = label(pos=((ncells*dx*0.8, amax(topo)*1.2, 0)))
-    timestamp.text = "Timestep = " + str(0)
-    xyaxes = axes(xmax=ncells*dx, ymax=amax(topo)*1.1, zshow=False)
-except: #Numeric
-    timestamp = label(pos=((ncells*dx*0.8, max(topo)*1.2, 0)))
-    timestamp.text = "Timestep = " + str(0)
-    xyaxes = axes(xmax=ncells*dx, ymax=max(topo)*1.1, zshow=False)
+# try: #numpy
+#     timestamp = label(pos=((ncells*dx*0.8, amax(topo)*1.2, 0)))
+#     timestamp.text = "Timestep = " + str(0)
+#     xyaxes = axes(xmax=ncells*dx, ymax=amax(topo)*1.1, zshow=False)
+# except: #Numeric
+#     timestamp = label(pos=((ncells*dx*0.8, max(topo)*1.2, 0)))
+#     timestamp.text = "Timestep = " + str(0)
+#     xyaxes = axes(xmax=ncells*dx, ymax=max(topo)*1.1, zshow=False)
 
     
 print ("\n Ready to run simulation. \n Click on VPython window to start simulation \n")
-mouse_pause(scene)
+
 
 '''***************************************'''
 '''Timesteps'''
@@ -415,7 +284,7 @@ for i in range(nsteps):
 
     '''update soil profiles'''
     ''' upstream boundary (leftmost node) ages in the usual way'''
-    soilcols[0].sus += chi_surface * exp(soilcols[0].z/z_star)
+    soilcols[0].sus += chi_surface * np.exp(soilcols[0].z/z_star)
     for n in range(len(soilcols)-1):
         '''advective transport of sediment's of pre-existing susceptibility
             as with the rest of the model, we use a backward looking (timewise) explicit function'''
@@ -424,22 +293,35 @@ for i in range(nsteps):
         '''deposit sediment/susceptibility'''
         soilcols[n].add_soil_susceptibility(dh_in[n], sus_out[n-1])
         '''susceptibility pedogenesis function'''
-        soilcols[n].sus += chi_surface * exp(soilcols[n].z/z_star)
+        soilcols[n].sus += chi_surface * np.exp(soilcols[n].z/z_star)
 
     '''ouput during simulation'''
     if i % print_out_step == 0:
         print ("Timestep=", i)
         print ("  Time = ", i*dt)
-        timestamp.text = "Timestep = " + str(i)
-        slope.z = topo
-        slope.update()
+        # timestamp.text = "Timestep = " + str(i)
+        # GRAPH INITIAL TOPOGRAPHY
+        
+        # fig, ax = plt.subplots()
+        # ax.plot(xpos,topo)
+        # plt.show()
+        topoLine.set_xdata(xpos)
+        topoLine.set_ydata(topo)
+        # drawing updated values
+        fig.canvas.draw()
+        fig.canvas.flush_events()
+        # time.sleep(0.1)
+
+
+        # slope.z = topo
+        # slope.update()
 ##        print 'dh, topo_old[outcol-1], topo_old[outcol]', dh[outcol]
 ##        print  topo_old[outcol-1], topo_old[outcol], topo_old[outcol+1]
 ##        print "sus_in, sus_out", sus_out[outcol-1], sus_out[outcol]
 ##        print "sus", soilcols[outcol-1].sus[0],  soilcols[outcol].sus[0],  soilcols[outcol+1].sus[0]
         #soilscene.update(z, sus[40])
         #soilcols[outcol].update_graph()
-        soilgrf.update_graph()
+        # soilgrf.update_graph()
 
 
 '''***************************************'''
@@ -475,27 +357,27 @@ print ("Done writing")
 '''***************************************'''
 '''Post simulation data analysis'''
 '''***************************************'''
-print ("")
-print ("Use arrow keys (or click on node) to select nodes to view on graph. \n")
-while 1:
-    if scene.mouse.events:
-        m1 = scene.mouse.getevent()
-        if m1.click and m1.release:
-            for n in range(len(slope.nodes)):
-                if m1.pick == slope.nodes[n]:
-                    print ("Node selected =", n)
-                    update_soil_graph(soilgrf, soilcols, n, slope)
+# print ("")
+# print ("Use arrow keys (or click on node) to select nodes to view on graph. \n")
+# while 1:
+#     if scene.mouse.events:
+#         m1 = scene.mouse.getevent()
+#         if m1.click and m1.release:
+#             for n in range(len(slope.nodes)):
+#                 if m1.pick == slope.nodes[n]:
+#                     print ("Node selected =", n)
+#                     update_soil_graph(soilgrf, soilcols, n, slope)
 
     
-    if soilgrf.graph.graph.kb.keys: # is there an event waiting to be processed?
-        s = soilgrf.graph.graph.kb.getkey() # obtain keyboard information
-        #print s
-        change_graph_node(s,  soilgrf, soilcols, slope)
+#     if soilgrf.graph.graph.kb.keys: # is there an event waiting to be processed?
+#         s = soilgrf.graph.graph.kb.getkey() # obtain keyboard information
+#         #print s
+#         change_graph_node(s,  soilgrf, soilcols, slope)
             
-    if scene.kb.keys: # is there an event waiting to be processed?
-        s = scene.kb.getkey() # obtain keyboard information
-        #print s
-        change_graph_node(s,  soilgrf, soilcols, slope)
+#     if scene.kb.keys: # is there an event waiting to be processed?
+#         s = scene.kb.getkey() # obtain keyboard information
+#         #print s
+#         change_graph_node(s,  soilgrf, soilcols, slope)
             
     
 
